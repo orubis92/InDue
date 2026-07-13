@@ -1,0 +1,247 @@
+/* ============================================================
+   InDue — Design tokens e stili
+   Palette: petrolio profondo + ambra solare (casa ↔ vacanza),
+   sfondo verde-grigio chiarissimo, tipografia Outfit + Inter.
+   ============================================================ */
+
+:root {
+  --bg: #F2F4F1;
+  --surface: #FFFFFF;
+  --ink: #1E2A2B;
+  --ink-soft: #5B6B6C;
+  --line: #E1E6E1;
+  --primary: #0F6B66;
+  --primary-soft: #E2EFED;
+  --accent: #E8A63C;
+  --danger: #C4574E;
+  --radius: 14px;
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
+  min-height: 100dvh;
+}
+
+h1, h2, h3, button { font-family: var(--font-display); }
+
+/* --- Header ------------------------------------------------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0 16px;
+}
+.app-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+.app-header h1 .dot { color: var(--accent); }
+
+.btn-ghost {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+.btn-ghost:hover { background: var(--line); }
+
+/* --- Login --------------------------------------------------- */
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  margin-top: 15vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.auth-card h2 { margin: 0 0 4px; font-size: 1.3rem; }
+.auth-card p  { margin: 0 0 8px; color: var(--ink-soft); font-size: 0.92rem; }
+
+/* --- Form elements ------------------------------------------ */
+input, select, textarea {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-primary:disabled { opacity: 0.5; cursor: default; }
+
+.error-msg { color: var(--danger); font-size: 0.88rem; margin: 0; }
+
+/* --- Barra aggiunta rapida ----------------------------------- */
+.add-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.add-form input { flex: 1; }
+.add-form .btn-primary { padding: 0 16px; font-size: 1.4rem; line-height: 1; }
+
+.add-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+@media (max-width: 480px) {
+  .add-details { grid-template-columns: 1fr 1fr; }
+}
+
+/* --- Filtri --------------------------------------------------- */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+
+.chip {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  cursor: pointer;
+}
+.chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* --- Lista attività ------------------------------------------ */
+.task-list { display: flex; flex-direction: column; gap: 8px; }
+
+.section-label {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  margin: 16px 0 4px;
+}
+
+.task-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--cat-color, var(--line));
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+.task-item.done { opacity: 0.55; }
+.task-item.done .task-title { text-decoration: line-through; }
+
+.task-check {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  border: 2px solid var(--ink-soft);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  color: transparent;
+  font-size: 14px;
+}
+.task-check.checked {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.task-main { flex: 1; min-width: 0; }
+.task-title { font-weight: 500; overflow-wrap: break-word; }
+.task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+.task-meta .pill {
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.task-meta .pill.person { color: #fff; background: var(--person-color, var(--ink-soft)); }
+.task-meta .pill.overdue { color: #fff; background: var(--danger); }
+
+.task-delete {
+  flex: 0 0 auto;
+  border: none;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+}
+.task-delete:hover { color: var(--danger); background: var(--bg); }
+
+.empty-state {
+  text-align: center;
+  color: var(--ink-soft);
+  padding: 48px 16px;
+  font-size: 0.95rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .task-item { transition: opacity 0.25s ease; }
+}

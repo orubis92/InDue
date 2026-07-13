@@ -6,6 +6,11 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      // Service worker personalizzato (src/sw.js): serve per gestire
+      // le notifiche push oltre alla cache offline.
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg'],
       manifest: {
@@ -19,8 +24,7 @@ export default defineConfig({
           { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }
         ]
       },
-      workbox: {
-        // Cache dell'app shell per uso offline (i dati richiedono comunque rete)
+      injectManifest: {
         globPatterns: ['**/*.{js,css,html,svg}']
       }
     })

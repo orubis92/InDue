@@ -245,3 +245,122 @@ input:focus, select:focus, textarea:focus {
 @media (prefers-reduced-motion: no-preference) {
   .task-item { transition: opacity 0.25s ease; }
 }
+
+/* ============================================================
+   Versione 2: tema scuro, note, modali, template, offline
+   ============================================================ */
+
+/* --- Tema scuro (segue le impostazioni del dispositivo) ------ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141B1B;
+    --surface: #1D2626;
+    --ink: #E8ECEA;
+    --ink-soft: #93A3A2;
+    --line: #2C3838;
+    --primary: #2FA79E;
+    --primary-soft: #1B3230;
+    --accent: #E8A63C;
+    --danger: #D9695F;
+  }
+  .task-meta .pill { background: #263030; }
+}
+
+/* --- Note ------------------------------------------------------ */
+.notes-input { margin-bottom: 8px; resize: vertical; }
+.task-notes {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-top: 2px;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+.details-toggle { margin: -4px 0 8px; font-size: 0.82rem; }
+
+.add-details { grid-template-columns: 1fr 1fr; }
+@media (min-width: 481px) {
+  .add-details { grid-template-columns: 1fr 1fr 1fr 1fr; }
+}
+
+/* --- Pulsante modifica ---------------------------------------- */
+.task-edit {
+  flex: 0 0 auto;
+  border: none;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+}
+.task-edit:hover { color: var(--primary); background: var(--bg); }
+
+/* --- Sezione "Fatte" ------------------------------------------ */
+.done-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.done-header .section-label { margin: 16px 0 4px; }
+.hint { font-size: 0.8rem; color: var(--ink-soft); }
+
+/* --- Modali ----------------------------------------------------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 15, 0.55);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 50;
+}
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  width: 100%;
+  max-width: 440px;
+  max-height: 85dvh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.modal h3 { margin: 0 0 4px; font-size: 1.1rem; }
+.modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* --- Liste riutilizzabili -------------------------------------- */
+.template-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.template-info { flex: 1; display: flex; flex-direction: column; }
+.template-form { display: flex; flex-direction: column; gap: 8px; }
+.btn-small { padding: 8px 14px; font-size: 0.88rem; }
+
+/* --- Header e offline ------------------------------------------ */
+.header-actions { display: flex; align-items: center; gap: 2px; }
+.offline-banner {
+  background: var(--accent);
+  color: #3A2A08;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}

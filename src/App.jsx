@@ -8,6 +8,7 @@ import FilterBar from './components/FilterBar'
 import TaskList from './components/TaskList'
 import EditTaskModal from './components/EditTaskModal'
 import Templates from './components/Templates'
+import Pets from './components/Pets'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -15,6 +16,7 @@ export default function App() {
   const [filter, setFilter] = useState({ category: null, person: null })
   const [editingTask, setEditingTask] = useState(null)
   const [showTemplates, setShowTemplates] = useState(false)
+  const [showPets, setShowPets] = useState(false)
 
   // Recupera la sessione salvata e resta in ascolto di login/logout
   useEffect(() => {
@@ -70,6 +72,9 @@ export default function App() {
           <button className="btn-ghost" onClick={() => setShowTemplates(true)} title="Liste riutilizzabili">
             🧳
           </button>
+          <button className="btn-ghost" onClick={() => setShowPets(true)} title="I nostri animali">
+            🐾
+          </button>
           <button className="btn-ghost" onClick={() => supabase.auth.signOut()}>
             Esci
           </button>
@@ -113,6 +118,14 @@ export default function App() {
           categories={categories}
           onClose={() => setShowTemplates(false)}
           onApplied={refresh}
+        />
+      )}
+
+      {showPets && (
+        <Pets
+          categories={categories}
+          onClose={() => setShowPets(false)}
+          onTaskCreated={refresh}
         />
       )}
     </>

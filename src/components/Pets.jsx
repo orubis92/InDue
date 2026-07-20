@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { uploadPhoto, photoUrl } from '../lib/photos'
 
 const PET_EMOJIS = ['🐶', '🐱', '🐰', '🐹', '🐦', '🐠', '🐢', '🐴']
 const EVENT_TYPES = [
@@ -98,6 +99,10 @@ export default function Pets({ categories, onClose, onTaskCreated }) {
       next_due: form.get('next_due') || null
     }
     setBusy(true)
+    const photo = form.get('photo')
+    if (photo && photo.size > 0 && navigator.onLine) {
+      payload.photo_path = await uploadPhoto(photo)
+    }
     await supabase.from('pet_events').insert(payload)
     setBusy(false)
     setAddingEvent(false)
@@ -208,6 +213,11 @@ export default function Pets({ categories, onClose, onTaskCreated }) {
                 <strong>{eventEmoji(ev.event_type)} {ev.event_type} · {fmt(ev.event_date)}</strong>
                 {ev.notes && <span className="hint">{ev.notes}</span>}
                 {ev.next_due && <span className="hint">↻ prossima: {fmt(ev.next_due)}</span>}
+                {ev.photo_path && (
+                  <a href={photoUrl(ev.photo_path)} target="_blank" rel="noreferrer" className="hint">
+                    📷 Vedi foto allegata
+                  </a>
+                )}
               </div>
               <button className="task-delete" onClick={() => removeEvent(ev)} aria-label="Elimina voce">×</button>
             </div>
@@ -231,6 +241,10 @@ export default function Pets({ categories, onClose, onTaskCreated }) {
               <label className="field-label">
                 Prossima scadenza (opzionale, es. richiamo)
                 <input type="date" name="next_due" />
+              </label>
+              <label className="field-label photo-field">
+                📷 Foto (pagina del libretto, referto…)
+                <input type="file" name="photo" accept="image/*" />
               </label>
               <div className="modal-actions">
                 <button type="button" className="btn-ghost" onClick={() => setAddingEvent(false)}>Annulla</button>

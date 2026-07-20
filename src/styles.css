@@ -391,3 +391,118 @@ input:focus, select:focus, textarea:focus {
   font-size: 0.8rem;
   color: var(--ink-soft);
 }
+
+/* ============================================================
+   Versione 4: spesa, calendario, menu, foto
+   ============================================================ */
+
+/* --- Modalità spesa -------------------------------------------- */
+.shopping-mode { padding-top: 4px; }
+.shopping-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.shopping-header h2 { margin: 0; font-size: 1.3rem; }
+.shopping-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+.shopping-item .task-check { pointer-events: none; }
+.shopping-item.done { opacity: 0.55; text-decoration: line-through; }
+
+/* --- Calendario ------------------------------------------------- */
+.cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.cal-nav .btn-ghost { font-size: 1.3rem; padding: 2px 14px; }
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-bottom: 12px;
+}
+.cal-dow {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding: 4px 0;
+}
+.cal-day {
+  aspect-ratio: 1;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--surface);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 2px;
+}
+.cal-day.other { opacity: 0.35; }
+.cal-day.today { border-color: var(--accent); font-weight: 700; }
+.cal-day.selected { background: var(--primary); color: #fff; }
+.cal-dots { display: flex; gap: 2px; height: 5px; }
+.cal-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+.cal-day.selected .cal-dot { background: #fff; }
+.cal-dot.pet { background: #8A6D3B; }
+.cal-dot.overdue { background: var(--danger); }
+
+/* --- Menu -------------------------------------------------------- */
+.menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 13px 14px;
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+.menu-row:hover { border-color: var(--primary); }
+
+/* --- Foto --------------------------------------------------------- */
+.task-photo {
+  display: block;
+  max-width: 140px;
+  max-height: 100px;
+  border-radius: 8px;
+  margin-top: 6px;
+  object-fit: cover;
+}
+.photo-field input[type="file"] { padding: 8px; font-size: 0.85rem; }
+.check-row { flex-direction: row; align-items: center; gap: 8px; }
+.check-row input { width: auto; }

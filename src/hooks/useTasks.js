@@ -139,10 +139,11 @@ export function useTasks(session) {
   }
 
   // --- Azioni -------------------------------------------------
-  async function addTask({ title, notes, categoryId, assignedTo, dueDate, repeatDays }) {
+  async function addTask({ title, notes, categoryId, assignedTo, dueDate, repeatDays, photoPath }) {
     const payload = {
       title,
       notes: notes || null,
+      photo_path: photoPath || null,
       category_id: categoryId || null,
       assigned_to: assignedTo || null,
       due_date: dueDate || null,

@@ -1,4 +1,6 @@
-/** Singola attività: check, titolo, note, categoria, persona,
+import { photoUrl } from '../lib/photos'
+
+/** Singola attività: check, titolo, note, foto, categoria, persona,
  *  scadenza, ricorrenza, "fatta da", modifica ed eliminazione. */
 export default function TaskItem({ task, profiles, onToggle, onDelete, onEdit }) {
   const person = profiles.find(p => p.id === task.assigned_to)
@@ -25,6 +27,11 @@ export default function TaskItem({ task, profiles, onToggle, onDelete, onEdit })
       <div className="task-main">
         <div className="task-title">{task.title}</div>
         {task.notes && <div className="task-notes">{task.notes}</div>}
+        {task.photo_path && (
+          <a href={photoUrl(task.photo_path)} target="_blank" rel="noreferrer">
+            <img className="task-photo" src={photoUrl(task.photo_path)} alt="" loading="lazy" />
+          </a>
+        )}
         <div className="task-meta">
           {task.category && (
             <span className="pill">{task.category.emoji} {task.category.name}</span>

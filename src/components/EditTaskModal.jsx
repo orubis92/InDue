@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { uploadPhoto, photoUrl } from '../lib/photos'
 
 /** Modifica di un'attività esistente: tocca ✎ su un'attività per aprirla. */
 export default function EditTaskModal({ task, categories, profiles, onSave, onClose }) {
@@ -8,12 +9,25 @@ export default function EditTaskModal({ task, categories, profiles, onSave, onCl
   const [assignedTo, setAssignedTo] = useState(task.assigned_to || '')
   const [dueDate, setDueDate] = useState(task.due_date || '')
   const [repeatDays, setRepeatDays] = useState(task.repeat_days ? String(task.repeat_days) : '')
+  const [photoFile, setPhotoFile] = useState(null)
+  const [removePhoto, setRemovePhoto] = useState(false)
+  const [busy, setBusy] = useState(false)
 
-  function handleSave(e) {
+  async function handleSave(e) {
     e.preventDefault()
     const clean = title.trim()
     if (!clean) return
+    setBusy(true)
+    let photoPatch = {}
+    if (photoFile && navigator.onLine) {
+      const path = await uploadPhoto(photoFile)
+      if (path) photoPatch = { photo_path: path }
+    } else if (removePhoto) {
+      photoPatch = { photo_path: null }
+    }
+    setBusy(false)
     onSave(task.id, {
+      ...photoPatch,
       title: clean,
       notes: notes.trim() || null,
       category_id: categoryId || null,
@@ -66,9 +80,24 @@ export default function EditTaskModal({ task, categories, profiles, onSave, onCl
             <option value="30">Ogni mese</option>
           </select>
         </div>
+        <label className="field-label photo-field">
+          📷 {task.photo_path ? 'Sostituisci foto' : 'Aggiungi foto'}
+          <input type="file" accept="image/*"
+            onChange={e => { setPhotoFile(e.target.files?.[0] ?? null); setRemovePhoto(false) }} />
+        </label>
+        {task.photo_path && !photoFile && (
+          <label className="field-label check-row">
+            <input type="checkbox" checked={removePhoto}
+              onChange={e => setRemovePhoto(e.target.checked)} />
+            Rimuovi la foto attuale
+          </label>
+        )}
+        {task.photo_path && !removePhoto && !photoFile && (
+          <img className="task-photo" src={photoUrl(task.photo_path)} alt="" />
+        )}
         <div className="modal-actions">
           <button type="button" className="btn-ghost" onClick={onClose}>Annulla</button>
-          <button className="btn-primary">Salva modifiche</button>
+          <button className="btn-primary" disabled={busy}>Salva modifiche</button>
         </div>
       </form>
     </div>

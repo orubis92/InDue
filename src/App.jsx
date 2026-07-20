@@ -9,16 +9,35 @@ import TaskList from './components/TaskList'
 import EditTaskModal from './components/EditTaskModal'
 import Templates from './components/Templates'
 import Pets from './components/Pets'
+import ShoppingMode from './components/ShoppingMode'
+import CalendarView from './components/CalendarView'
+import MenuSheet from './components/MenuSheet'
+
+/** Legge titolo/testo/link condivisi da altre app (Web Share Target). */
+function readSharePrefill() {
+  const params = new URLSearchParams(window.location.search)
+  const title = params.get('title') || params.get('text') || ''
+  const url = params.get('url') || ''
+  if (!title && !url) return null
+  window.history.replaceState({}, '', window.location.pathname)
+  return {
+    title: title || 'Link condiviso',
+    notes: url && url !== title ? url : ''
+  }
+}
 
 export default function App() {
   const [session, setSession] = useState(null)
   const [checking, setChecking] = useState(true)
   const [filter, setFilter] = useState({ category: null, person: null })
   const [editingTask, setEditingTask] = useState(null)
+  const [view, setView] = useState(null) // null | 'shopping' | 'calendar'
   const [showTemplates, setShowTemplates] = useState(false)
   const [showPets, setShowPets] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
+  const [exporting, setExporting] = useState(false)
+  const [sharePrefill] = useState(readSharePrefill)
 
-  // Recupera la sessione salvata e resta in ascolto di login/logout
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session)
@@ -35,6 +54,14 @@ export default function App() {
 
   const push = usePush(session)
 
+  // Badge sull'icona dell'app: numero delle attività da fare
+  const todoCount = useMemo(() => tasks.filter(t => !t.done).length, [tasks])
+  useEffect(() => {
+    if (!('setAppBadge' in navigator)) return
+    if (todoCount > 0) navigator.setAppBadge(todoCount).catch(() => {})
+    else navigator.clearAppBadge?.().catch(() => {})
+  }, [todoCount])
+
   const visibleTasks = useMemo(() => {
     return tasks.filter(t => {
       if (filter.category && t.category_id !== filter.category) return false
@@ -43,8 +70,51 @@ export default function App() {
     })
   }, [tasks, filter])
 
+  /** Backup completo dei dati in un file JSON. */
+  async function exportData() {
+    setExporting(true)
+    const tables = ['categories', 'profiles', 'tasks', 'templates',
+      'template_items', 'pets', 'pet_events']
+    const backup = { esportato_il: new Date().toISOString() }
+    for (const t of tables) {
+      const { data } = await supabase.from(t).select('*')
+      backup[t] = data ?? []
+    }
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = `indue-backup-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(a.href)
+    setExporting(false)
+    setShowMenu(false)
+  }
+
   if (checking) return null
   if (!session) return <Auth />
+
+  // Viste a schermo intero (spesa e calendario)
+  if (view === 'shopping') {
+    return (
+      <ShoppingMode
+        tasks={tasks}
+        categories={categories}
+        onAdd={addTask}
+        onToggle={toggleTask}
+        onRefresh={refresh}
+        onClose={() => setView(null)}
+      />
+    )
+  }
+  if (view === 'calendar') {
+    return (
+      <CalendarView
+        tasks={tasks}
+        onToggle={toggleTask}
+        onClose={() => setView(null)}
+      />
+    )
+  }
 
   return (
     <>
@@ -57,31 +127,25 @@ export default function App() {
       <header className="app-header">
         <h1>InDue<span className="dot">.</span></h1>
         <div className="header-actions">
-          {push.supported && (
-            <button
-              className="btn-ghost"
-              onClick={push.toggle}
-              disabled={push.busy}
-              title={push.enabled
-                ? 'Notifiche attive su questo dispositivo'
-                : 'Attiva le notifiche su questo dispositivo'}
-            >
-              {push.enabled ? '🔔' : '🔕'}
-            </button>
-          )}
-          <button className="btn-ghost" onClick={() => setShowTemplates(true)} title="Liste riutilizzabili">
-            🧳
+          <button className="btn-ghost" onClick={() => setView('shopping')} title="Modalità spesa">
+            🛒
           </button>
-          <button className="btn-ghost" onClick={() => setShowPets(true)} title="I nostri animali">
-            🐾
+          <button className="btn-ghost" onClick={() => setView('calendar')} title="Calendario scadenze">
+            📅
           </button>
-          <button className="btn-ghost" onClick={() => supabase.auth.signOut()}>
-            Esci
+          <button className="btn-ghost" onClick={() => setShowMenu(true)} title="Menu" aria-label="Menu">
+            ⋯
           </button>
         </div>
       </header>
 
-      <AddTaskForm categories={categories} profiles={profiles} onAdd={addTask} />
+      <AddTaskForm
+        key={sharePrefill ? 'share' : 'std'}
+        categories={categories}
+        profiles={profiles}
+        onAdd={addTask}
+        initial={sharePrefill}
+      />
 
       <FilterBar
         categories={categories}
@@ -126,6 +190,18 @@ export default function App() {
           categories={categories}
           onClose={() => setShowPets(false)}
           onTaskCreated={refresh}
+        />
+      )}
+
+      {showMenu && (
+        <MenuSheet
+          push={push}
+          exporting={exporting}
+          onTemplates={() => setShowTemplates(true)}
+          onPets={() => setShowPets(true)}
+          onExport={exportData}
+          onLogout={() => supabase.auth.signOut()}
+          onClose={() => setShowMenu(false)}
         />
       )}
     </>

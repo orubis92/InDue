@@ -1,32 +1,38 @@
 import { useState } from 'react'
+import { uploadPhoto } from '../lib/photos'
 
-/** Aggiunta rapida: titolo + dettagli opzionali (note, categoria,
- *  persona, scadenza, ricorrenza). */
-export default function AddTaskForm({ categories, profiles, onAdd }) {
-  const [title, setTitle] = useState('')
-  const [notes, setNotes] = useState('')
+/** Aggiunta rapida: titolo + dettagli opzionali (note, foto,
+ *  categoria, persona, scadenza, ricorrenza). Può essere
+ *  pre-compilato dalla condivisione di altre app. */
+export default function AddTaskForm({ categories, profiles, onAdd, initial }) {
+  const [title, setTitle] = useState(initial?.title ?? '')
+  const [notes, setNotes] = useState(initial?.notes ?? '')
   const [categoryId, setCategoryId] = useState('')
   const [assignedTo, setAssignedTo] = useState('')
   const [dueDate, setDueDate] = useState('')
   const [repeatDays, setRepeatDays] = useState('')
-  const [showDetails, setShowDetails] = useState(false)
+  const [photoFile, setPhotoFile] = useState(null)
+  const [showDetails, setShowDetails] = useState(!!initial?.notes)
+  const [busy, setBusy] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
     const clean = title.trim()
     if (!clean) return
+    setBusy(true)
+    // La foto richiede la rete: offline viene semplicemente ignorata
+    const photoPath = navigator.onLine ? await uploadPhoto(photoFile) : null
     await onAdd({
       title: clean,
       notes: notes.trim(),
       categoryId,
       assignedTo,
       dueDate,
-      repeatDays: repeatDays ? Number(repeatDays) : null
+      repeatDays: repeatDays ? Number(repeatDays) : null,
+      photoPath
     })
-    setTitle('')
-    setNotes('')
-    setDueDate('')
-    setRepeatDays('')
+    setTitle(''); setNotes(''); setDueDate(''); setRepeatDays(''); setPhotoFile(null)
+    setBusy(false)
   }
 
   return (
@@ -38,7 +44,7 @@ export default function AddTaskForm({ categories, profiles, onAdd }) {
           onChange={e => setTitle(e.target.value)}
           aria-label="Nuova attività"
         />
-        <button className="btn-primary" aria-label="Aggiungi attività">+</button>
+        <button className="btn-primary" disabled={busy} aria-label="Aggiungi attività">+</button>
       </div>
 
       <button
@@ -46,7 +52,7 @@ export default function AddTaskForm({ categories, profiles, onAdd }) {
         className="btn-ghost details-toggle"
         onClick={() => setShowDetails(v => !v)}
       >
-        {showDetails ? '− Meno dettagli' : '+ Note, scadenza, ricorrenza…'}
+        {showDetails ? '− Meno dettagli' : '+ Note, foto, scadenza, ricorrenza…'}
       </button>
 
       {showDetails && (
@@ -88,6 +94,14 @@ export default function AddTaskForm({ categories, profiles, onAdd }) {
               <option value="30">Ogni mese</option>
             </select>
           </div>
+          <label className="field-label photo-field">
+            📷 Foto (scontrino, prodotto…)
+            <input
+              type="file"
+              accept="image/*"
+              onChange={e => setPhotoFile(e.target.files?.[0] ?? null)}
+            />
+          </label>
         </>
       )}
     </form>

@@ -22,7 +22,13 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }
-        ]
+        ],
+        // Condivisione da altre app: "Condividi -> InDue" crea un'attività
+        share_target: {
+          action: '/',
+          method: 'GET',
+          params: { title: 'title', text: 'text', url: 'url' }
+        }
       },
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,svg}']
